@@ -1,0 +1,27 @@
+<!-- home page html -->
+<div class="container">
+
+  <div *ngIf="!registerMode" class="text-center">
+    <h1>Find your match</h1>
+    <p class="lead">Come on in to view your matches... All you need to do is sign up!</p>
+    <div class="text-center">
+      <button class="btn btn-primary btn-lg mr-2" (click)="registerToggle()">Register</button>
+      <button class="btn btn-info btn-lg">Learn More</button>
+    </div>
+  </div>
+
+  <div *ngIf="registerMode" class="container">
+    <div class="row justify-content-center">
+      <div class="col-4">
+        <!-- passing data to child component -->
+        <!-- specify which value we are using -->
+        <!-- *** for input properties we use sware brackets [] -->
+        <!-- *** for output properties we use parenthesis ()  -->
+        <!-- passing the event via $event -->
+        <!-- <app-register [valuesFromHome]="values" (cancelRegister)="cancelRegisterMode($event)"></app-register> -->
+        <app-register (cancelRegister)="cancelRegisterMode($event)"></app-register>
+      </div>
+    </div>
+  </div>
+
+</div>
