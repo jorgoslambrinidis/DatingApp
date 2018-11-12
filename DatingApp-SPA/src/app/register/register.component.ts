@@ -1,5 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { AuthService } from '../_services/auth.service';
+import { AlertifyService } from '../_services/alertify.service';
 
 @Component({
   selector: 'app-register',
@@ -22,7 +23,7 @@ export class RegisterComponent implements OnInit {
 
   // init service method to be able to use the method
   // init here the register to make use of the created register method in the auth service
-  constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService, private alertify: AlertifyService) { }
 
   ngOnInit() {
   }
@@ -34,9 +35,11 @@ export class RegisterComponent implements OnInit {
     // doing after this is successful
     // we will also handling the error
     this.authService.register(this.model).subscribe(() => {
-      console.log('registration successful');
+      // console.log('registration successful');
+      this.alertify.success('Registration Successful!');
     }, error => {
-      console.log(error);
+      // console.log(error);
+      this.alertify.error(error);
     });
   }
 
@@ -51,7 +54,7 @@ export class RegisterComponent implements OnInit {
     // we are emitting something from this method
     // as long as we are emitting some form of data, to our parent component its fine
     this.cancelRegister.emit(false);
-    console.log('cancelled');
+    // console.log('cancelled');
   }
 
 }

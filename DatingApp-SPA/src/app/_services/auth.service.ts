@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { map } from 'rxjs/operators';
+import { JwtHelperService } from '@auth0/angular-jwt';
 
 // Components are injectable by default, but services are not
 // because of that we need to specify the @Injectable decorator
@@ -16,6 +17,8 @@ import { map } from 'rxjs/operators';
 })
 export class AuthService {
   baseUrl = 'http://localhost:5000/api/auth/';
+  jwtHelper = new JwtHelperService();
+  decodedToken: any;
 
   constructor(private http: HttpClient) {}
 
@@ -32,6 +35,8 @@ export class AuthService {
         const user = response;
         if (user) {
           localStorage.setItem('token', user.token);
+          this.decodedToken = this.jwtHelper.decodeToken(user.token);
+          console.log(this.decodedToken);
         }
       })
     );
@@ -44,7 +49,8 @@ export class AuthService {
 
   loggedIn() {
     const token = localStorage.getItem('token'); // get token if the user is logged in
-    return !!token; // !! -> this will return true or false value
+    // return !!token; // !! -> this will return true or false value
+    return !this.jwtHelper.isTokenExpired(token);
   }
 
 }
