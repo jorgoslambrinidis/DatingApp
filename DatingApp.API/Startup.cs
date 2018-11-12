@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using DatingApp.API.Data;
+using DatingApp.API.Helpers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -64,6 +68,32 @@ namespace DatingApp.API
             }
             else
             {
+                // this UseExceptionHandler is middleware to our pipline that catches exceptions
+                // it logs them, and re-executes the request in an outerner pipeline
+                // use of the Run at terminal middleware delegates to the app request pipeline
+                // inside Run() we can access our context  
+                // handling it globally
+                app.UseExceptionHandler(builder => {
+                    builder.Run(async context => {
+                        context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+
+                        // get the detalis of the error
+                        // this error is going to store our particular error
+                        var error = context.Features.Get<IExceptionHandlerFeature>();
+
+                        if(error != null) {
+                            // before the async, write response from extension class
+                            // this is going to add a new header to our response
+                            context.Response.AddApplicationError(error.Error.Message);
+
+                            // writing our error message in the http response
+                            // here we have to have our own extension method such as WriteAsync
+                            // add new folder "Helpers" in the Dating.API project
+                            // -> add new class here in Helpers folder called "Extensions.cs"
+                            await context.Response.WriteAsync(error.Error.Message);
+                        }
+                    });
+                });
                 // app.UseHsts();
             }
 

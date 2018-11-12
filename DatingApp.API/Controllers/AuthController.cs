@@ -22,7 +22,6 @@ namespace DatingApp.API.Controllers
         {
             _config = config;
             _repo = repo;
-
         }
 
         [HttpPost("register")]
@@ -47,57 +46,68 @@ namespace DatingApp.API.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login(UserForLoginDto userForLoginDto)
         {
-            // check if we have a user stored in our db
-            var userFromRepo = await _repo.Login(userForLoginDto.Username.ToLower(), userForLoginDto.Password);
+            // try
+            // {
+            // throw new Exception("Computer says no!");
 
-            if (userFromRepo == null)
-            {
-                return Unauthorized();
-            }
+                // check if we have a user stored in our db
+                var userFromRepo = await _repo.Login(userForLoginDto.Username.ToLower(), userForLoginDto.Password);
 
-            // our token it's going to contain 2 claims (users id/users username)
-            var claims = new[]
-            {
-                new Claim(ClaimTypes.NameIdentifier, userFromRepo.Id.ToString()),
-                new Claim(ClaimTypes.Name, userFromRepo.Username)
-            };
+                if (userFromRepo == null)
+                {
+                    return Unauthorized();
+                }
 
-            // chack if the tokens are valid
-            // when it comes back the server needs to sign this token 
-            var key = new SymmetricSecurityKey(Encoding.UTF8
-                .GetBytes(_config.GetSection("AppSettings:Token").Value));
-            
-            // use the key as part of signing credential
-            // encrypting this key with hashing algorithm 
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+                // our token it's going to contain 2 claims (users id/users username)
+                var claims = new[]
+                {
+                    new Claim(ClaimTypes.NameIdentifier, userFromRepo.Id.ToString()),
+                    new Claim(ClaimTypes.Name, userFromRepo.Username)
+                };
 
-            // token creation
-            // -> token descriptor
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(claims),  // passing claims as subject
-                Expires = DateTime.Now.AddDays(1),     // give an expire date of 24h
-                SigningCredentials = creds             // passing signing credentials
-            };
+                // chack if the tokens are valid
+                // when it comes back the server needs to sign this token 
+                var key = new SymmetricSecurityKey(Encoding.UTF8
+                    .GetBytes(_config.GetSection("AppSettings:Token").Value));
 
-            // create a token handler 
-            // needed to create the token based on tokenDescriptor
-            var tokenHandler = new JwtSecurityTokenHandler();
+                // use the key as part of signing credential
+                // encrypting this key with hashing algorithm 
+                var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
 
-            // pass the tokenDescriptor via tokenHandler in the token variable
-            var token = tokenHandler.CreateToken(tokenDescriptor);
+                // token creation
+                // -> token descriptor
+                var tokenDescriptor = new SecurityTokenDescriptor
+                {
+                    Subject = new ClaimsIdentity(claims),  // passing claims as subject
+                    Expires = DateTime.Now.AddDays(1),     // give an expire date of 24h
+                    SigningCredentials = creds             // passing signing credentials
+                };
 
-            // use the token variable to write the token 
-            // in the response that we send back to the client
-            return Ok(new{
-                token = tokenHandler.WriteToken(token)  
-            });
+                // create a token handler 
+                // needed to create the token based on tokenDescriptor
+                var tokenHandler = new JwtSecurityTokenHandler();
+
+                // pass the tokenDescriptor via tokenHandler in the token variable
+                var token = tokenHandler.CreateToken(tokenDescriptor);
+
+                // use the token variable to write the token 
+                // in the response that we send back to the client
+                return Ok(new
+                {
+                    token = tokenHandler.WriteToken(token)
+                });
+
+            // }
+            // catch
+            // {
+            //     return StatusCode(500, "Computer really says no!");
+            // }
 
             // we can check the created token via postman on 
             // http://localhost:5000/api/auth/login
             // username: john / password: password
             // and than decode the generated token on https://jwt.io/
-     
+
         }
 
 
