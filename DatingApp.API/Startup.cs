@@ -40,8 +40,9 @@ namespace DatingApp.API
             .AddJsonOptions(opt => {
                 opt.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
             });
-            services.AddCors();
-            services.AddAutoMapper();
+
+            services.AddCors();  
+            services.AddAutoMapper();  // define AutoMapper here
             services.AddTransient<Seed>(); // add in configure method
             
             // register DI

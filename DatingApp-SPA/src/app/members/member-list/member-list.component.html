@@ -1,0 +1,23 @@
+<!-- div.container -> to create div with class container -->
+<!-- here we are going to tell our component about our new
+     child component that we are going to use to display our users
+-->
+
+<div class="container mt-5">
+  <div class="row">
+    <!-- div.col-lg-2.col-md-3.col-sm-6 -->
+    <div *ngFor="let user of users" class="col-lg-2 col-md-3 col-sm-6">
+      <!-- and ->
+        we need to pass our user down as our input property
+        that we are using inside the member-card component
+      -->
+      <!-- [user] -> represents our input property -->
+      <!-- and we have to assign this user from *ngFor to that input property -->
+
+      <app-member-card [user]="user"></app-member-card>
+
+      <!-- snippet a-ngfor -->
+      <!-- <p *ngFor="let user of users">{{ user.knownAs }}</p> -->
+    </div>
+  </div>
+</div>
