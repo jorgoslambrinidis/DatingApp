@@ -35,6 +35,8 @@ namespace DatingApp.API.Helpers
                 });
             CreateMap<Photo, PhotosForDetailedDto>();
 
+            CreateMap<UserForUpdateDto, User>();
+
             // AutoMapper is convention based
             // Ex:
             // "Username" propery inside User.cs 

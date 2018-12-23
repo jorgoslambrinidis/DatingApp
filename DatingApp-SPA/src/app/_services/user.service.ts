@@ -46,4 +46,11 @@ export class UserService {
       return this.http.get<User>(this.baseUrl + 'users/' + id); // pass our httpOptions, <- remove httpOptions
     }
 
+    // updateUser method
+    updateUser(id: number, user: User) {
+      // pass the id, and the whole user object
+      return this.http.put(this.baseUrl + 'users/' + id, user);
+    }
+    // -> next we have to go to our component "member-edit.component.ts"
+
 }

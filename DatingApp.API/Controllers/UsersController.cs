@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
 using DatingApp.API.Data;
@@ -44,5 +46,29 @@ namespace DatingApp.API.Controllers
             // return Ok(user);
             return Ok(userToReturn);
         }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateUser(int id, UserForUpdateDto userForUpdateDto)
+        {
+            // compate the "id" of the path [HttpPut("{id}")] to the             
+            // users "id" that is being passed in as part of their token
+
+            // this is how we are going to check to see if the user is the current user
+            // that passed the token up to our server that is attempting to access this 
+            // route [HttpPut("{id}")] and doing an HttpPut
+
+            if (id != int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value))
+            return Unauthorized();
+
+            var userFromRepo = await _repo.GetUser(id);
+
+            // get info from userForUpdateDto and map this into our userFromRepo
+            _mapper.Map(userForUpdateDto, userFromRepo);
+
+            if (await _repo.SaveAll())
+                return NoContent();
+            throw new Exception($"Updateding user {id} failed on save");
+        }
+
     }
 }
